@@ -68,87 +68,232 @@ const scrollToSection = (id) => {
 };
 
 // ===== Navbar =====
-const Navbar = () => (
-  <div className="fixed top-0 w-full flex justify-between px-6 py-4 backdrop-blur border-b border-white/10 z-50">
-    
-    <span
-  onClick={() => scrollToSection("home")}
-  className="font-logo cursor-pointer text-white hover:text-indigo-400 transition tracking-wide text-lg"
->
-  {"<SahilDevX />"}
-</span>
+const Navbar = () => {
+  const [open, setOpen] = React.useState(false);
+  const [active, setActive] = React.useState("home");
 
-    <div className="flex gap-4 text-sm text-gray-400">
+  const sections = ["home","skills","certifications","education","experience","projects","contact"];
+
+  React.useEffect(() => {
+  const handleScroll = () => {
+    let current = "home";
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        const top = el.offsetTop - 200;
+
+        if (window.scrollY >= top) {
+          current = id;
+        }
+      }
+    });
+
+    // 🔥 FIX: detect bottom of page → force "contact"
+    if (
+      window.innerHeight + window.scrollY >=
+      document.body.offsetHeight - 50
+    ) {
+      current = "contact";
+    }
+
+    setActive(current);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+  return (
+    <div className="fixed top-0 w-full backdrop-blur-md bg-slate-950/70 border-b border-white/10 z-50">
       
-      <span onClick={() => scrollToSection("home")} className="hover:text-white transition cursor-pointer">Home</span>
-      <span onClick={() => scrollToSection("skills")} className="hover:text-white transition cursor-pointer">Skills</span>
-      <span onClick={() => scrollToSection("certifications")} className="hover:text-white transition cursor-pointer">Certifications</span>
-      <span onClick={() => scrollToSection("education")} className="hover:text-white transition cursor-pointer">Education</span>
-      <span onClick={() => scrollToSection("exp")} className="hover:text-white transition cursor-pointer">Experience</span>
-      <span onClick={() => scrollToSection("projects")} className="hover:text-white transition cursor-pointer">Projects</span>
-      <span onClick={() => scrollToSection("contact")} className="hover:text-white transition cursor-pointer">Contact</span>
+      <div className="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
+        
+        {/* Logo */}
+        <span
+          onClick={() => scrollToSection("home")}
+          className="font-logo cursor-pointer text-white hover:text-indigo-400 transition tracking-wide text-lg"
+        >
+          {"<SahilDevX />"}
+        </span>
 
+        {/* Desktop Nav */}
+        <div className="hidden md:flex gap-6 text-sm">
+          {sections.map((id) => (
+            <span
+              key={id}
+              onClick={() => scrollToSection(id)}
+              className={`cursor-pointer capitalize transition ${
+                active === id
+                  ? "text-indigo-400"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              {id}
+            </span>
+          ))}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <button onClick={() => setOpen(!open)}>☰</button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {open && (
+        <div className="md:hidden px-6 pb-4 flex flex-col gap-4 text-sm">
+          {sections.map((id) => (
+            <span
+              key={id}
+              onClick={() => {
+                scrollToSection(id);
+                setOpen(false);
+              }}
+              className={`cursor-pointer capitalize transition ${
+                active === id
+                  ? "text-indigo-400"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              {id}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 // ===== Hero =====
 const Hero = () => (
-  <section id="home" className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-    {/* Big Background Text */}
-    <h1 className="absolute text-[80px] md:text-[140px] font-bold text-white/5 select-none">@SahilDevX</h1>
+  <section id="home" className="min-h-screen flex items-center justify-center px-6 pt-24 relative overflow-hidden">
+    
+    {/* Background Text */}
+    <h1 className="absolute text-[60px] sm:text-[80px] md:text-[140px] font-bold text-white/5 select-none text-center">
+      @SahilDevX
+    </h1>
 
-    {/* Glow */}
-    <div className="absolute w-72 h-72 bg-indigo-500/20 blur-3xl rounded-full right-10 md:right-20 top-1/2 -translate-y-1/2" />
+    <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl z-10 gap-10">
 
-    <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl z-10">
+      {/* ===== MOBILE VIEW (Overlay) ===== */}
+      <div className="relative w-full md:hidden">
+        
+        {/* Image */}
+        <div
+          className="relative group"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            e.currentTarget.style.setProperty("--x", `${x}px`);
+            e.currentTarget.style.setProperty("--y", `${y}px`);
+          }}
+        >
+          <img
+            src="/anime.png"
+            alt="anime"
+            className="w-full rounded-xl object-cover"
+          />
 
-      {/* LEFT */}
-      <div className="max-w-xl">
-        <motion.div variants={fadeUp} initial="hidden" animate="show">
-          <p className="text-indigo-400 text-sm">// portfolio</p>
-          <h2 className="text-4xl md:text-6xl font-bold mt-2">{profile.name}</h2>
-          <p className="text-gray-400 mt-3">{profile.role}</p>
-          <p className="text-gray-500 mt-2">{profile.tagline}</p>
+          <img
+            src="/profile.png"
+            alt="real"
+            className="w-full rounded-xl object-cover absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition duration-300"
+            style={{
+              WebkitMaskImage:
+                "radial-gradient(circle 120px at var(--x, 0px) var(--y, 0px), black 60%, transparent 100%)",
+              maskImage:
+                "radial-gradient(circle 120px at var(--x, 0px) var(--y, 0px), black 60%, transparent 100%)"
+            }}
+          />
 
-          <div className="flex gap-4 mt-6">
-            <a href={profile.github} target="_blank" rel="noopener noreferrer" className="px-5 py-2 bg-white text-black rounded-lg hover:scale-105 transition">GitHub</a>
-            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="px-5 py-2 border border-white/20 rounded-lg hover:scale-105 transition">LinkedIn</a>
+          {/* Overlay Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent rounded-xl" />
+
+          {/* TEXT OVER IMAGE */}
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-indigo-400 text-xs">// portfolio</p>
+
+            <h2 className="text-2xl font-bold mt-1 leading-tight">
+              {profile.name}
+            </h2>
+
+            <p className="text-gray-300 text-sm mt-1">
+              {profile.role}
+            </p>
+
+            <div className="flex gap-3 mt-3">
+              <a href={profile.github} target="_blank" className="px-4 py-1.5 bg-white text-black text-xs rounded-md">
+                GitHub
+              </a>
+
+              <a href={profile.linkedin} target="_blank" className="px-4 py-1.5 border border-white/20 text-xs rounded-md">
+                LinkedIn
+              </a>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* RIGHT IMAGE (Anime + Cursor Reveal) */}
-      <div
-  className="mt-10 md:mt-0 relative group"
-  onMouseMove={(e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    e.currentTarget.style.setProperty("--x", `${x}px`);
-    e.currentTarget.style.setProperty("--y", `${y}px`);
-  }}
->
-  {/* Anime base */}
-  <img
-    src="/anime.png"
-    alt="anime"
-    className="w-64 md:w-80 lg:w-96 rounded-xl object-cover"
-  />
+      {/* ===== DESKTOP VIEW (UNCHANGED) ===== */}
+      <div className="hidden md:flex items-center justify-between w-full">
 
-  {/* Real reveal (FIXED) */}
-  <img
-    src="/profile.png"
-    alt="real"
-    className="w-64 md:w-80 lg:w-96 rounded-xl object-cover absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition duration-300"
-    style={{
-      WebkitMaskImage:
-        "radial-gradient(circle 120px at var(--x, 0px) var(--y, 0px), black 60%, transparent 100%)",
-      maskImage:
-        "radial-gradient(circle 120px at var(--x, 0px) var(--y, 0px), black 60%, transparent 100%)"
-    }}
-  />
-</div>
+        {/* LEFT */}
+        <div className="max-w-xl">
+          <motion.div variants={fadeUp} initial="hidden" animate="show">
+            <p className="text-indigo-400 text-sm">// portfolio</p>
+
+            <h2 className="text-4xl md:text-6xl font-bold mt-2">
+              {profile.name}
+            </h2>
+
+            <p className="text-gray-400 mt-3">{profile.role}</p>
+            <p className="text-gray-500 mt-2">{profile.tagline}</p>
+
+            <div className="flex gap-4 mt-6">
+              <a href={profile.github} target="_blank" className="px-5 py-2 bg-white text-black rounded-lg hover:scale-105 transition">
+                GitHub
+              </a>
+
+              <a href={profile.linkedin} target="_blank" className="px-5 py-2 border border-white/20 rounded-lg hover:scale-105 transition">
+                LinkedIn
+              </a>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* RIGHT IMAGE */}
+        <div
+          className="relative group"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            e.currentTarget.style.setProperty("--x", `${x}px`);
+            e.currentTarget.style.setProperty("--y", `${y}px`);
+          }}
+        >
+          <img
+            src="/anime.png"
+            alt="anime"
+            className="w-80 lg:w-96 rounded-xl object-cover"
+          />
+
+          <img
+            src="/profile.png"
+            alt="real"
+            className="w-80 lg:w-96 rounded-xl object-cover absolute top-0 left-0 opacity-0 group-hover:opacity-100 transition duration-300"
+            style={{
+              WebkitMaskImage:
+                "radial-gradient(circle 120px at var(--x, 0px) var(--y, 0px), black 60%, transparent 100%)",
+              maskImage:
+                "radial-gradient(circle 120px at var(--x, 0px) var(--y, 0px), black 60%, transparent 100%)"
+            }}
+          />
+        </div>
+
+      </div>
     </div>
   </section>
 );
@@ -197,7 +342,7 @@ const Education = () => (
 
 // ===== Experience =====
 const Experience = () => (
-  <section id="exp" className="py-16 px-6 max-w-5xl mx-auto">
+  <section id="experience" className="py-16 px-6 max-w-5xl mx-auto">
     <h2 className="text-xl text-gray-400 mb-6">// experience</h2>
     <div className="space-y-6">
       {[{
