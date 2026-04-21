@@ -18,11 +18,11 @@ const profile = {
   linkedin: "https://www.linkedin.com/in/sahil-dange-a314a11b2/",
   github: "https://github.com/SahilDevX",
   skills: [
-    "C++","Python","JavaScript","Java",
-    "React","HTML","CSS","SCSS","Bootstrap",
+    "C++","Python","JavaScript","Java","MySQL",
+    "React","AWS","HTML","CSS","SCSS","Bootstrap",
     "Node","Django","REST","JWT","OAuth",
     "Git","GitHub","Visual Studio","Figma","Airtable","Make",
-    "Netlify","Heroku","Hostinger","AWS"
+    "Netlify","Heroku","Hostinger"
   ],
   certifications: [
     "NPTEL - Cyber Security and Privacy",
